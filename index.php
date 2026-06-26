@@ -18,17 +18,48 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        /* ── Design tokens — single source of truth for colours ── */
+        :root {
+            --navy:          #00008c;
+            --navy-deep:     #000070;
+            --navy-soft:     rgba(255, 255, 255, 0.055);
+            --line-soft:     rgba(255, 255, 255, 0.10);
+            --text-soft:     rgba(219, 234, 254, 0.66);
+            --blue-accent:   #60a5fa;
+            --yellow-accent: #facc15;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000064;
+            background-color: var(--navy);
             color: white;
             scroll-behavior: smooth;
         }
         .font-serif {
             font-family: 'Libre Baskerville', serif;
         }
-        .bg-navy-dark { background-color: #000064; }
-        .bg-navy-light { background-color: rgba(255, 255, 255, 0.05); }
+        .bg-navy-dark  { background-color: var(--navy); }
+        .bg-navy-light { background-color: var(--navy-soft); }
+
+        /* Hero section gradient */
+        #home {
+            background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+        }
+
+        /* Nav initial state — slightly transparent, overrides Tailwind */
+        nav {
+            background-color: color-mix(in srgb, var(--navy) 90%, transparent) !important;
+            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        /* Nav scrolled state — more opaque, deeper colour, shadow */
+        nav.is-scrolled {
+            background-color: color-mix(in srgb, var(--navy-deep) 97%, transparent) !important;
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.40);
+        }
+        /* Mobile menu matches nav colour */
+        #mobile-menu {
+            background-color: var(--navy) !important;
+        }
 
         /* Mobile menu slide animation */
         #mobile-menu {

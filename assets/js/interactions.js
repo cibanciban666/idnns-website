@@ -106,6 +106,44 @@
             '  will-change: left, top;',
             '}',
 
+            /* ── Nav: desktop link underline — expands from centre on hover/active ── */
+            '.js-nav-link { position: relative; }',
+            '.js-nav-link::after {',
+            '  content: "";',
+            '  position: absolute;',
+            '  left: 50%; right: 50%;',  /* zero-width centred = invisible */
+            '  bottom: -5px;',
+            '  height: 2px;',
+            '  background: var(--blue-accent, #60a5fa);',
+            '  transition: left 0.22s ease, right 0.22s ease;',
+            '}',
+            /* Hover: expand underline to full link width */
+            '@media (hover: hover) {',
+            '  .js-nav-link:hover::after { left: 0; right: 0; }',
+            '}',
+            /* Active (set by scrollspy via is-active class) */
+            '.js-nav-link.is-active { opacity: 1 !important; }',
+            '.js-nav-link.is-active::after {',
+            '  left: 0; right: 0;',
+            '  background: var(--blue-accent, #60a5fa);',
+            '}',
+
+            /* ── Nav: logo subtle scale on hover ── */
+            '.js-nav-logo {',
+            '  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);',
+            '}',
+            '@media (hover: hover) {',
+            '  .js-nav-logo:hover { transform: scale(1.03); }',
+            '}',
+
+            /* ── Nav: Join Now — extra blue glow stacked on existing js-btn scale ── */
+            '@media (hover: hover) {',
+            '  .js-nav-join.js-btn:hover {',
+            '    box-shadow: 0 0 0 2px var(--blue-accent, #60a5fa),',
+            '                0 6px 20px rgba(96, 165, 250, 0.28);',
+            '  }',
+            '}',
+
         ].join('\n');
 
         var tag = document.createElement('style');
@@ -426,17 +464,77 @@
     }
 
     /* ─────────────────────────────────────────────
+     * 8. NAV LINK STYLING
+     *    Tags desktop nav links with js-nav-link (underline animation),
+     *    the logo with js-nav-logo, and the Join Now button with
+     *    js-nav-join (extra glow on top of existing js-btn scale).
+     *    Mobile menu links are intentionally excluded so touch UX
+     *    is unaffected.
+     * ───────────────────────────────────────────── */
+
+    function initNavLinks() {
+        var nav = document.querySelector('nav');
+        if (!nav) return;
+
+        /* Desktop links = any nav anchor NOT inside #mobile-menu
+           AND NOT the Join Now button (which has rounded-full) */
+        Array.prototype.slice.call(nav.querySelectorAll('a[href]'))
+            .filter(function (a) {
+                if (a.closest('#mobile-menu')) return false;       /* skip mobile */
+                if (/rounded-full/.test(a.className || '')) return false; /* skip Join Now */
+                return true;
+            })
+            .forEach(function (a) { a.classList.add('js-nav-link'); });
+
+        /* Logo */
+        var logo = nav.querySelector('img');
+        if (logo) logo.classList.add('js-nav-logo');
+
+        /* Join Now — add extra class for the glow rule, after js-btn is set by initHoverEffects */
+        var joinBtn = nav.querySelector('a[href="register.php"]');
+        if (joinBtn) joinBtn.classList.add('js-nav-join');
+    }
+
+    /* ─────────────────────────────────────────────
+     * 9. NAV SCROLL EFFECT
+     *    Adds .is-scrolled to <nav> once the page scrolls past
+     *    50 px so the background darkens and a shadow appears.
+     *    Transition is defined in CSS so it stays smooth even
+     *    on low-end devices (no JS animation frame budget spent).
+     * ───────────────────────────────────────────── */
+
+    function initNavScroll() {
+        var nav = document.querySelector('nav');
+        if (!nav) return;
+
+        function update() {
+            var past = (window.scrollY || window.pageYOffset) > 50;
+            nav.classList.toggle('is-scrolled', past);
+        }
+
+        var ticking = false;
+        window.addEventListener('scroll', function () {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () { update(); ticking = false; });
+        }, { passive: true });
+
+        update(); /* correct state on initial load */
+    }
+
+    /* ─────────────────────────────────────────────
      * INIT
      * ───────────────────────────────────────────── */
 
     function init() {
         injectStyles();
-        /* Stagger must run before reveal so it can tag card children first */
-        initStagger();
+        initStagger();        /* tag grid children before reveal observes them  */
         initScrollReveal();
         initCountUp();
         initScrollspy();
-        initHoverEffects();
+        initHoverEffects();   /* adds js-btn to buttons including Join Now       */
+        initNavLinks();       /* adds js-nav-link, js-nav-logo, js-nav-join      */
+        initNavScroll();      /* toggles nav.is-scrolled on scroll > 50 px       */
         initSpotlight();
         initRipple();
     }
