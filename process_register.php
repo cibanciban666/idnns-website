@@ -9,14 +9,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* ── Design tokens ── */
+        :root {
+            --navy:          #00008c;
+            --navy-deep:     #000070;
+            --navy-soft:     rgba(255, 255, 255, 0.055);
+            --line-soft:     rgba(255, 255, 255, 0.10);
+            --text-soft:     rgba(219, 234, 254, 0.66);
+            --blue-accent:   #60a5fa;
+            --yellow-accent: #facc15;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000064;
+            background-color: var(--navy);
             color: white;
             scroll-behavior: smooth;
         }
         .font-serif    { font-family: 'Libre Baskerville', serif; }
-        .bg-navy-light { background-color: rgba(255,255,255,0.05); }
+        .bg-navy-light { background-color: var(--navy-soft); }
+
+        /* Nav — overrides Tailwind bg-[#000064]/95 */
+        nav {
+            background-color: color-mix(in srgb, var(--navy) 90%, transparent) !important;
+            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        nav.is-scrolled {
+            background-color: color-mix(in srgb, var(--navy-deep) 97%, transparent) !important;
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.40);
+        }
+        #mobile-menu { background-color: var(--navy) !important; }
 
         #mobile-menu {
             max-height: 0;
@@ -58,7 +80,7 @@
 // ======================
 // CONFIG
 // ======================
-$upload_dir   = '/home/nhuufdqr/invoice/';
+$upload_dir   = __DIR__ . '/uploads/payments/';
 $max_size     = 5 * 1024 * 1024;
 $allowed_mime = ['image/jpeg', 'image/png', 'application/pdf'];
 
@@ -72,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $error = 'Invalid request. Please submit the form.';
 } else {
 
-    include 'config.php';
+    include 'config.local.php';
 
     // 1. Ambil data form
     $first_name = trim($_POST['first_name'] ?? '');
@@ -169,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             <?php
             $navItems = ['Home', 'About', 'Journals', 'Conferences', 'Membership', 'Contact'];
             foreach ($navItems as $item): ?>
-                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : '#' . strtolower($item)); ?>"
+                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : 'index.php#' . strtolower($item)); ?>"
                    class="text-sm uppercase tracking-widest font-bold opacity-60 hover:opacity-100 transition-opacity">
                     <?php echo $item; ?>
                 </a>
@@ -191,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     <div id="mobile-menu" class="lg:hidden border-t border-white/10 bg-[#000064]">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
             <?php foreach ($navItems as $item): ?>
-                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : '#' . strtolower($item)); ?>"
+                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : 'index.php#' . strtolower($item)); ?>"
                    onclick="closeMenu()"
                    class="text-sm uppercase tracking-widest font-bold opacity-70 hover:opacity-100 py-3 px-4 rounded-xl hover:bg-white/5 transition-all">
                     <?php echo $item; ?>
@@ -360,5 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         iconX.classList.add('hidden');
     }
 </script>
+
+<script src="assets/js/interactions.js"></script>
 </body>
 </html>

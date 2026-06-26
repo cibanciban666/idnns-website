@@ -5,3 +5,4 @@ uploads/
 wp/
 .well-known/
 *.mp4
+config.local.php

@@ -44,12 +44,34 @@
         /* Hero section gradient */
         #home {
             background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+            position: relative; /* needed for ::after pseudo-element */
+        }
+
+        /* Smooth fade-out at the bottom of the hero so the transition
+           into the "Who We Are" section (body bg = --navy) is gradual,
+           not a hard colour-shift at the section boundary. */
+        #home::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 140px;
+            background: linear-gradient(to bottom, transparent, var(--navy));
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Reveal animation — override interactions.js defaults for this page only.
+           duration is set per-element via data-duration; easing overridden here. */
+        .reveal {
+            transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         /* Nav initial state — slightly transparent, overrides Tailwind */
         nav {
             background-color: color-mix(in srgb, var(--navy) 90%, transparent) !important;
-            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+            transition: background-color 0.5s ease, box-shadow 0.35s ease;
         }
         /* Nav scrolled state — more opaque, deeper colour, shadow */
         nav.is-scrolled {
@@ -132,7 +154,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="relative pt-16 pb-24 px-6 reveal">
+    <section id="home" class="relative pt-16 pb-24 px-6 reveal" data-duration="900">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-blue-400 text-2xl font-bold mb-6">Welcome to IdNNS (Indonesian Artificial Neural Network Society)</h2>
             <h1 class="text-4xl md:text-6xl font-serif leading-tight mb-8">
@@ -153,7 +175,7 @@
     </section>
 
     <!-- Video Introduction Section -->
-    <section id="about" class="pt-5 pb-24 px-6 reveal">
+    <section id="about" class="pt-5 pb-24 px-6 reveal" data-duration="900">
         <div class="max-w-5xl mx-auto">
 
             <!-- Label + heading -->
@@ -211,7 +233,7 @@
     </section>
 
     <!-- Journals & Conferences -->
-    <section class="py-24 px-6 bg-navy-light reveal">
+    <section class="py-24 px-6 bg-navy-light reveal" data-duration="900">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
             <!-- Journals -->
             <div id="journals">
@@ -304,7 +326,7 @@
     </section>
 
     <!-- Community Section -->
-    <section id="community" class="py-32 px-6 reveal">
+    <section id="community" class="py-32 px-6 reveal" data-duration="900">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
             <div>
                 <h2 class="text-4xl font-serif mb-8">IdNNS Community</h2>

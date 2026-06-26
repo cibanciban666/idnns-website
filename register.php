@@ -11,14 +11,36 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        /* ── Design tokens ── */
+        :root {
+            --navy:          #00008c;
+            --navy-deep:     #000070;
+            --navy-soft:     rgba(255, 255, 255, 0.055);
+            --line-soft:     rgba(255, 255, 255, 0.10);
+            --text-soft:     rgba(219, 234, 254, 0.66);
+            --blue-accent:   #60a5fa;
+            --yellow-accent: #facc15;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000064;
+            background-color: var(--navy);
             color: white;
             scroll-behavior: smooth;
         }
         .font-serif    { font-family: 'Libre Baskerville', serif; }
-        .bg-navy-light { background-color: rgba(255,255,255,0.05); }
+        .bg-navy-light { background-color: var(--navy-soft); }
+
+        /* Nav — overrides Tailwind bg-[#000064]/95 */
+        nav {
+            background-color: color-mix(in srgb, var(--navy) 90%, transparent) !important;
+            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        nav.is-scrolled {
+            background-color: color-mix(in srgb, var(--navy-deep) 97%, transparent) !important;
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.40);
+        }
+        #mobile-menu { background-color: var(--navy) !important; }
 
         /* Mobile menu */
         #mobile-menu {
@@ -138,7 +160,7 @@
     <div id="mobile-menu" class="lg:hidden border-t border-white/10 bg-[#000064]">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
             <?php foreach ($navItems as $item): ?>
-                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : '#' . strtolower($item)); ?>"
+                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : 'index.php#' . strtolower($item)); ?>"
                    onclick="closeMenu()"
                    class="text-sm uppercase tracking-widest font-bold opacity-70 hover:opacity-100 py-3 px-4 rounded-xl hover:bg-white/5 transition-all">
                     <?php echo $item; ?>
@@ -150,7 +172,7 @@
 
 
 <!-- ───────────────────── HERO ───────────────────── -->
-<section class="relative pt-16 pb-10 px-6 hero-glow">
+<section class="relative pt-16 pb-10 px-6 hero-glow reveal">
     <div class="max-w-2xl mx-auto text-center">
         <p class="text-blue-400 text-xs uppercase tracking-[0.4em] font-bold mb-4">Membership Registration</p>
         <h1 class="text-3xl md:text-5xl font-serif leading-tight mb-4">Join IdNNS</h1>
@@ -162,7 +184,7 @@
 
 
 <!-- ───────────────────── FORM ───────────────────── -->
-<section class="py-12 px-6 pb-28">
+<section class="py-12 px-6 pb-28 reveal reveal-up" data-delay="80">
     <div class="max-w-2xl mx-auto">
 
         <div class="bg-navy-light border border-white/10 rounded-3xl p-8 md:p-10">
@@ -263,7 +285,7 @@
                         <p id="file-name" class="mt-3 text-xs text-blue-400 font-semibold hidden"></p>
                     </div>
                     <input type="file" id="payment_proof" name="payment_proof" accept=".jpg,.jpeg,.png,.pdf" required>
-                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-payment_proof">Please upload your payment proof (JPG, JPEG, PNG, or PDF).</p>
+                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-payment_proof"></p>
                 </div>
 
                 <div class="border-t border-white/5 mb-8"></div>
@@ -353,13 +375,47 @@
     const fileInput  = document.getElementById('payment_proof');
     const uploadZone = document.getElementById('upload-zone');
     const fileLabel  = document.getElementById('file-name');
+    let   selectedFile = null;
 
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 0) {
-            fileLabel.textContent = fileInput.files[0].name;
-            fileLabel.classList.remove('hidden');
+    /* Returns null if file is valid, or a specific human-readable error string. */
+    function validateFile(file) {
+        if (!file) return 'Please upload your payment proof (JPG, JPEG, PNG, or PDF).';
+        const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        if (!allowed.includes(file.type)) {
+            return 'Format tidak didukung. Gunakan JPG, JPEG, PNG, atau PDF.';
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            const mb = (file.size / (1024 * 1024)).toFixed(1);
+            return `File terlalu besar (${mb} MB). Maksimal ukuran file adalah 5 MB.`;
+        }
+        return null;
+    }
+
+    /* Show or clear the file error message and update upload zone border colour. */
+    function setFileError(msg) {
+        const el = document.getElementById('err-payment_proof');
+        if (!el) return;
+        if (msg) {
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            uploadZone.style.borderColor = 'rgba(248,113,113,0.6)';
+        } else {
+            el.textContent = '';
+            el.classList.add('hidden');
             uploadZone.style.borderColor = 'rgba(96,165,250,0.5)';
         }
+    }
+
+    /* Validate and update UI immediately whenever a file is chosen. */
+    function handleFileChosen(file) {
+        selectedFile = file;
+        fileLabel.textContent = file.name;
+        fileLabel.classList.remove('hidden');
+        setFileError(validateFile(file));
+    }
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) handleFileChosen(fileInput.files[0]);
     });
 
     uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
@@ -369,10 +425,16 @@
         uploadZone.classList.remove('drag-over');
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            fileInput.files = files;
-            fileLabel.textContent = files[0].name;
-            fileLabel.classList.remove('hidden');
-            uploadZone.style.borderColor = 'rgba(96,165,250,0.5)';
+            /* Use DataTransfer to properly inject the dropped file into <input>
+               so the browser includes it in the multipart form submission.
+               Direct assignment (fileInput.files = e.dataTransfer.files) is
+               read-only and silently fails in most browsers. */
+            try {
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                fileInput.files = dt.files;
+            } catch (_) { /* DataTransfer unavailable — server will catch the missing file */ }
+            handleFileChosen(files[0]);
         }
     });
 
@@ -420,12 +482,10 @@
             showError('category', true); valid = false;
         } else showError('category', false);
 
-        /* Payment proof */
-        const file    = fileInput.files[0];
-        const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-        if (!file || !allowed.includes(file.type) || file.size > 5 * 1024 * 1024) {
-            showError('payment_proof', true); valid = false;
-        } else showError('payment_proof', false);
+        /* Payment proof — prefer selectedFile (covers both click-pick and drag-drop) */
+        const fileErr = validateFile(selectedFile || fileInput.files[0]);
+        setFileError(fileErr);
+        if (fileErr) valid = false;
 
         if (!valid) e.preventDefault();
     });
@@ -436,5 +496,7 @@
         if (el) el.addEventListener('change', () => showError(id, false));
     });
 </script>
+
+<script src="assets/js/interactions.js"></script>
 </body>
 </html>

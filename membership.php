@@ -18,15 +18,37 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        /* ── Design tokens ── */
+        :root {
+            --navy:          #00008c;
+            --navy-deep:     #000070;
+            --navy-soft:     rgba(255, 255, 255, 0.055);
+            --line-soft:     rgba(255, 255, 255, 0.10);
+            --text-soft:     rgba(219, 234, 254, 0.66);
+            --blue-accent:   #60a5fa;
+            --yellow-accent: #facc15;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000064;
+            background-color: var(--navy);
             color: white;
             scroll-behavior: smooth;
         }
         .font-serif { font-family: 'Libre Baskerville', serif; }
-        .bg-navy-dark  { background-color: #000064; }
-        .bg-navy-light { background-color: rgba(255,255,255,0.05); }
+        .bg-navy-dark  { background-color: var(--navy); }
+        .bg-navy-light { background-color: var(--navy-soft); }
+
+        /* Nav — overrides Tailwind bg-[#000064]/95 */
+        nav {
+            background-color: color-mix(in srgb, var(--navy) 90%, transparent) !important;
+            transition: background-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        nav.is-scrolled {
+            background-color: color-mix(in srgb, var(--navy-deep) 97%, transparent) !important;
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.40);
+        }
+        #mobile-menu { background-color: var(--navy) !important; }
 
         /* Mobile menu slide */
         #mobile-menu {
@@ -99,7 +121,7 @@
                 }
             ?>
                 <a href="<?php echo $href; ?>"
-                   class="text-sm uppercase tracking-widest font-bold <?php echo $item === 'Membership' ? 'opacity-100 text-blue-400' : 'opacity-60 hover:opacity-100'; ?> transition-opacity">
+                   class="text-sm uppercase tracking-widest font-bold opacity-60 <?php echo $item === 'Membership' ? 'is-active' : 'hover:opacity-100'; ?> transition-opacity">
                     <?php echo $item; ?>
                 </a>
             <?php endforeach; ?>
@@ -123,9 +145,9 @@
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
             <?php
             foreach ($navItems as $item): ?>
-                <a href="<?php echo $item === 'Home' ? 'index.php' : '#' . strtolower($item); ?>"
+                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : 'index.php#' . strtolower($item)); ?>"
                    onclick="closeMenu()"
-                   class="text-sm uppercase tracking-widest font-bold opacity-70 hover:opacity-100 py-3 px-4 rounded-xl hover:bg-white/5 transition-all">
+                   class="text-sm uppercase tracking-widest font-bold opacity-70 hover:opacity-100 py-3 px-4 rounded-xl hover:bg-white/5 transition-all <?php echo $item === 'Membership' ? 'is-active' : ''; ?>">
                     <?php echo $item; ?>
                 </a>
             <?php endforeach; ?>
@@ -135,7 +157,7 @@
 
 
 <!-- ─────────────────────────── HERO SECTION ─────────────────────────── -->
-<section id="membership" class="relative pt-20 pb-20 px-6 hero-glow">
+<section id="membership" class="relative pt-20 pb-20 px-6 hero-glow reveal">
     <div class="max-w-4xl mx-auto text-center">
         <p class="text-blue-400 text-xs uppercase tracking-[0.4em] font-bold mb-6">
             Indonesian Neural Network Society
@@ -150,7 +172,7 @@
     </div>
 
     <!-- Stat strip -->
-    <div class="max-w-3xl mx-auto mt-20 grid grid-cols-3 gap-4 text-center">
+    <div class="max-w-3xl mx-auto mt-20 grid grid-cols-3 gap-4 text-center reveal reveal-up" data-delay="180">
         <?php
         $stats = [
             ['value' => '250+', 'label' => 'Active Members'],
@@ -168,7 +190,7 @@
 
 
 <!-- ─────────────────────────── WHY JOIN ─────────────────────────── -->
-<section id="why-join" class="py-24 px-6">
+<section id="why-join" class="py-24 px-6 reveal">
     <div class="max-w-7xl mx-auto">
 
         <!-- Heading -->
@@ -217,7 +239,7 @@
 
 
 <!-- ─────────────────────────── BENEFITS ─────────────────────────── -->
-<section id="benefits" class="py-20 px-6">
+<section id="benefits" class="py-20 px-6 reveal">
     <div class="max-w-7xl mx-auto">
 
         <div class="mb-16">
@@ -254,7 +276,7 @@
 
 
 <!-- ─────────────────────────── MEMBER CARD PREVIEW ─────────────────────────── -->
-<section id="card-preview" class="py-20 px-6">
+<section id="card-preview" class="py-20 px-6 reveal">
     <div class="max-w-3xl mx-auto text-center">
 
         <p class="text-blue-400 text-xs uppercase tracking-[0.4em] font-bold mb-4">Official Identity</p>
@@ -321,7 +343,7 @@
     <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-start">
 
         <!-- Left: Info -->
-        <div>
+        <div class="reveal reveal-left">
             <p class="text-blue-400 text-[10px] uppercase tracking-widest font-bold mb-4">Details</p>
             <h2 class="text-3xl md:text-4xl font-serif mb-10">Membership Details</h2>
 
@@ -391,7 +413,7 @@
         </div>
 
         <!-- Right: Steps -->
-        <div>
+        <div class="reveal reveal-right" data-delay="120">
             <p class="text-blue-400 text-[10px] uppercase tracking-widest font-bold mb-4">How to Join</p>
             <h2 class="text-3xl md:text-4xl font-serif mb-10">Registration Steps</h2>
 
@@ -426,7 +448,7 @@
 
 
 <!-- ─────────────────────────── FINAL CTA ─────────────────────────── -->
-<section id="join" class="py-12 px-6">
+<section id="join" class="py-12 px-6 reveal reveal-up">
     <div class="max-w-3xl mx-auto text-center">
 
         <!-- Decorative ring -->
@@ -510,5 +532,7 @@
         });
     }
 </script>
+
+<script src="assets/js/interactions.js"></script>
 </body>
 </html>
