@@ -101,7 +101,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="relative pt-16 pb-24 px-6">
+    <section id="home" class="relative pt-16 pb-24 px-6 reveal">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-blue-400 text-2xl font-bold mb-6">Welcome to IdNNS (Indonesian Artificial Neural Network Society)</h2>
             <h1 class="text-4xl md:text-6xl font-serif leading-tight mb-8">
@@ -122,7 +122,7 @@
     </section>
 
     <!-- Video Introduction Section -->
-    <section id="about" class="pt-5 pb-24 px-6">
+    <section id="about" class="pt-5 pb-24 px-6 reveal">
         <div class="max-w-5xl mx-auto">
 
             <!-- Label + heading -->
@@ -163,15 +163,15 @@
             <!-- Stats bawah video -->
             <div class="mt-12 grid grid-cols-3 gap-3 text-center">
                 <div class="p-4 md:p-6 rounded-2xl bg-navy-light border border-white/5">
-                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1">250+</p>
+                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1" data-count="250" data-suffix="+">250+</p>
                     <p class="text-[9px] md:text-xs uppercase tracking-widest font-bold opacity-40">Members</p>
                 </div>
                 <div class="p-4 md:p-6 rounded-2xl bg-navy-light border border-white/5">
-                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1">3</p>
+                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1" data-count="3">3</p>
                     <p class="text-[9px] md:text-xs uppercase tracking-widest font-bold opacity-40">Journals</p>
                 </div>
                 <div class="p-4 md:p-6 rounded-2xl bg-navy-light border border-white/5">
-                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1">2020</p>
+                    <p class="text-2xl md:text-3xl font-bold text-blue-400 mb-1" data-count="2020" data-start="2000">2020</p>
                     <p class="text-[9px] md:text-xs uppercase tracking-widest font-bold opacity-40">Est.</p>
                 </div>
             </div>
@@ -180,7 +180,7 @@
     </section>
 
     <!-- Journals & Conferences -->
-    <section class="py-24 px-6 bg-navy-light">
+    <section class="py-24 px-6 bg-navy-light reveal">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
             <!-- Journals -->
             <div id="journals">
@@ -273,7 +273,7 @@
     </section>
 
     <!-- Community Section -->
-    <section id="community" class="py-32 px-6">
+    <section id="community" class="py-32 px-6 reveal">
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
             <div>
                 <h2 class="text-4xl font-serif mb-8">IdNNS Community</h2>
@@ -366,5 +366,6 @@
             iconX.classList.add("hidden");
         }
     </script>
+    <script src="assets/js/interactions.js"></script>
 </body>
 </html>
