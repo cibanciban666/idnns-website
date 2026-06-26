@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – IdNNS</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/idnns.ico">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000064;
+            color: white;
+            scroll-behavior: smooth;
+        }
+        .font-serif    { font-family: 'Libre Baskerville', serif; }
+        .bg-navy-light { background-color: rgba(255,255,255,0.05); }
+
+        /* Mobile menu */
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.35s ease;
+            opacity: 0;
+        }
+        #mobile-menu.open { max-height: 600px; opacity: 1; }
+
+        /* Field label */
+        .field-label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Input / select shared style */
+        .field-input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.75rem;
+            padding: 0.85rem 1rem;
+            color: white;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .field-input::placeholder { color: rgba(255,255,255,0.25); }
+        .field-input:focus {
+            border-color: rgba(96,165,250,0.6);
+            background: rgba(96,165,250,0.06);
+        }
+        .field-input option { background: #07114a; color: white; }
+
+        /* File upload zone */
+        .upload-zone {
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 0.75rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            background: rgba(255,255,255,0.03);
+        }
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: rgba(96,165,250,0.5);
+            background: rgba(96,165,250,0.05);
+        }
+        #payment_proof { display: none; }
+
+        /* Hero glow */
+        .hero-glow {
+            background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 70%);
+        }
+
+        /* Submit button */
+        .btn-submit { transition: transform 0.2s ease; }
+        .btn-submit:hover  { transform: scale(1.03); }
+        .btn-submit:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<!-- ───────────────────── NAVIGATION ───────────────────── -->
+<nav class="sticky top-0 z-50 bg-[#000064]/95 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+
+        <div class="flex items-center flex-1">
+            <img src="assets/images/idnnslogo1-removebg-preview.png" alt="IdNNS Logo" class="w-36 h-auto object-contain"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+            <span style="display:none" class="text-white font-bold text-xl tracking-tight">IdNNS</span>
+        </div>
+
+        <div class="hidden lg:flex gap-8 flex-1 justify-center">
+            <?php
+            $navItems = ['Home', 'About', 'Journals', 'Conferences', 'Membership', 'Contact'];
+        
+            foreach ($navItems as $item):
+                $lower = strtolower($item);
+        
+                if ($item === 'Home') {
+                    $href = 'index.php';
+                } elseif ($item === 'Membership') {
+                    $href = 'membership.php';
+                } else {
+                    $href = 'index.php#' . $lower;
+                }
+            ?>
+                <a href="<?php echo $href; ?>"
+                   class="text-sm uppercase tracking-widest font-bold opacity-60 hover:opacity-100 transition-opacity">
+                    <?php echo $item; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="flex items-center gap-3 flex-1 justify-end">
+            <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <i data-lucide="menu" class="w-6 h-6" id="icon-menu"></i>
+                <i data-lucide="x"    class="w-6 h-6 hidden" id="icon-x"></i>
+            </button>
+            <a href="register.php"
+               class="px-5 py-2 bg-white text-[#000064] rounded-full text-xs font-bold uppercase tracking-widest hover:scale-105 transition-transform">
+                Join Now
+            </a>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="lg:hidden border-t border-white/10 bg-[#000064]">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+            <?php foreach ($navItems as $item): ?>
+                <a href="<?php echo $item === 'Home' ? 'index.php' : ($item === 'Membership' ? 'membership.php' : '#' . strtolower($item)); ?>"
+                   onclick="closeMenu()"
+                   class="text-sm uppercase tracking-widest font-bold opacity-70 hover:opacity-100 py-3 px-4 rounded-xl hover:bg-white/5 transition-all">
+                    <?php echo $item; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</nav>
+
+
+<!-- ───────────────────── HERO ───────────────────── -->
+<section class="relative pt-16 pb-10 px-6 hero-glow">
+    <div class="max-w-2xl mx-auto text-center">
+        <p class="text-blue-400 text-xs uppercase tracking-[0.4em] font-bold mb-4">Membership Registration</p>
+        <h1 class="text-3xl md:text-5xl font-serif leading-tight mb-4">Join IdNNS</h1>
+        <p class="text-blue-100/50 text-base font-light leading-relaxed">
+            Complete the form below to become an official member of the Indonesian Neural Network Society.
+        </p>
+    </div>
+</section>
+
+
+<!-- ───────────────────── FORM ───────────────────── -->
+<section class="py-12 px-6 pb-28">
+    <div class="max-w-2xl mx-auto">
+
+        <div class="bg-navy-light border border-white/10 rounded-3xl p-8 md:p-10">
+
+            <form action="process_register.php" method="POST" enctype="multipart/form-data" id="register-form" novalidate>
+
+                <!-- First + Last Name -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="first_name" class="field-label">First Name <span class="text-blue-400">*</span></label>
+                        <input type="text" id="first_name" name="first_name" class="field-input" placeholder="e.g. John" required>
+                        <p class="hidden mt-1.5 text-red-400 text-xs" id="err-first_name">Please enter your first name.</p>
+                    </div>
+                    <div>
+                        <label for="last_name" class="field-label">Last Name <span class="text-blue-400">*</span></label>
+                        <input type="text" id="last_name" name="last_name" class="field-input" placeholder="e.g. Doe" required>
+                        <p class="hidden mt-1.5 text-red-400 text-xs" id="err-last_name">Please enter your last name.</p>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-6">
+                    <label for="email" class="field-label">Email Address <span class="text-blue-400">*</span></label>
+                    <input type="email" id="email" name="email" class="field-input" placeholder="you@example.com" required>
+                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-email">Please enter a valid email address.</p>
+                </div>
+
+                <!-- Country -->
+                <div class="mb-6">
+                    <label for="country" class="field-label">Country <span class="text-blue-400">*</span></label>
+                    <div class="relative">
+                        <select id="country" name="country" class="field-input pr-10" required>
+                            <option value="" disabled selected>Select your country</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="Vietnam">Vietnam</option>
+                            <option value="Brunei">Brunei</option>
+                            <option value="Myanmar">Myanmar</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Japan">Japan</option>
+                            <option value="South Korea">South Korea</option>
+                            <option value="China">China</option>
+                            <option value="India">India</option>
+                            <option value="Bangladesh">Bangladesh</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Oman">Oman</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="United Arab Emirates">United Arab Emirates</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-white/40"></i>
+                        </div>
+                    </div>
+                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-country">Please select your country.</p>
+
+                    <!-- Shown only when "Other" is selected -->
+                    <div id="country-other-wrap" class="hidden mt-3">
+                        <input type="text" id="country_other" name="country_other" class="field-input" placeholder="Type your country name...">
+                        <p class="hidden mt-1.5 text-red-400 text-xs" id="err-country_other">Please type your country.</p>
+                    </div>
+                </div>
+
+                <!-- Membership Category -->
+                <div class="mb-6">
+                    <label for="category" class="field-label">Membership Category <span class="text-blue-400">*</span></label>
+                    <div class="relative">
+                        <select id="category" name="category" class="field-input pr-10" required>
+                            <option value="" disabled selected>Select a category</option>
+                            <option value="Student">Student</option>
+                            <option value="Lecturer">Lecturer</option>
+                            <option value="Professional">Professional</option>
+                            <option value="General Public">General Public</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-white/40"></i>
+                        </div>
+                    </div>
+                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-category">Please select a membership category.</p>
+                </div>
+
+                <!-- Payment Proof -->
+                <div class="mb-8">
+                    <label class="field-label">Payment Proof <span class="text-blue-400">*</span></label>
+                    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('payment_proof').click()">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-400/60 mx-auto mb-3"></i>
+                        <p class="text-sm text-white/50 mb-1">Click to upload or drag & drop</p>
+                        <p class="text-[10px] uppercase tracking-widest text-white/25 font-bold">JPG · JPEG · PNG · PDF — max 5 MB</p>
+                        <p id="file-name" class="mt-3 text-xs text-blue-400 font-semibold hidden"></p>
+                    </div>
+                    <input type="file" id="payment_proof" name="payment_proof" accept=".jpg,.jpeg,.png,.pdf" required>
+                    <p class="hidden mt-1.5 text-red-400 text-xs" id="err-payment_proof">Please upload your payment proof (JPG, JPEG, PNG, or PDF).</p>
+                </div>
+
+                <div class="border-t border-white/5 mb-8"></div>
+
+                <button type="submit" class="btn-submit w-full py-4 bg-white text-[#000064] rounded-full text-xs font-bold uppercase tracking-widest">
+                    Register
+                </button>
+
+                <p class="mt-4 text-center text-blue-100/30 text-xs">
+                    Already a member?
+                    <a href="membership.php" class="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">Back to membership page</a>
+                </p>
+
+            </form>
+        </div>
+
+        <!-- Info note -->
+        <div class="mt-6 flex items-start gap-3 px-2">
+            <i data-lucide="info" class="w-4 h-4 text-blue-400/60 flex-shrink-0 mt-0.5"></i>
+            <p class="text-blue-100/30 text-xs leading-relaxed font-light">
+                After submitting, our team will verify your payment and send a confirmation email within
+                <strong class="text-white/50">3 working days</strong>.
+                For questions, contact <a href="mailto:info@idnns.org" class="text-blue-400 underline underline-offset-2">info@idnns.org</a>.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ───────────────────── FOOTER ───────────────────── -->
+    <footer id="contact" class="py-20 px-6 border-t border-white/5 text-center">
+        <div class="max-w-7xl mx-auto">
+            <p class="text-[10px] uppercase tracking-[0.3em] font-bold opacity-20 mb-4">
+                Indonesian Neural Network Society &copy; <?php echo date('Y'); ?>
+            </p>
+            <div class="flex justify-center gap-8 opacity-40">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@idnns.org" target="_blank" class="flex items-center gap-2 hover:opacity-100 transition-opacity">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    <span class="text-xs">info@idnns.org</span>
+                </a>
+                <a href="tel:+628588901686" class="flex items-center gap-2 hover:opacity-100 transition-opacity">
+                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    <span class="text-xs">+62 858-8901-6864</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+
+<script>
+    lucide.createIcons();
+
+    /* ── Mobile menu ── */
+    const btn      = document.getElementById('mobile-menu-btn');
+    const menu     = document.getElementById('mobile-menu');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconX    = document.getElementById('icon-x');
+    let isOpen = false;
+
+    btn.addEventListener('click', () => {
+        isOpen = !isOpen;
+        menu.classList.toggle('open', isOpen);
+        iconMenu.classList.toggle('hidden', isOpen);
+        iconX.classList.toggle('hidden', !isOpen);
+    });
+
+    function closeMenu() {
+        isOpen = false;
+        menu.classList.remove('open');
+        iconMenu.classList.remove('hidden');
+        iconX.classList.add('hidden');
+    }
+
+    /* ── Country "Other" toggle ── */
+    const countrySelect     = document.getElementById('country');
+    const countryOtherWrap  = document.getElementById('country-other-wrap');
+    const countryOtherInput = document.getElementById('country_other');
+
+    countrySelect.addEventListener('change', () => {
+        const isOther = countrySelect.value === 'Other';
+        countryOtherWrap.classList.toggle('hidden', !isOther);
+        countryOtherInput.required = isOther;
+        if (!isOther) countryOtherInput.value = '';
+    });
+
+    /* ── File upload UI ── */
+    const fileInput  = document.getElementById('payment_proof');
+    const uploadZone = document.getElementById('upload-zone');
+    const fileLabel  = document.getElementById('file-name');
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileLabel.textContent = fileInput.files[0].name;
+            fileLabel.classList.remove('hidden');
+            uploadZone.style.borderColor = 'rgba(96,165,250,0.5)';
+        }
+    });
+
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            fileLabel.textContent = files[0].name;
+            fileLabel.classList.remove('hidden');
+            uploadZone.style.borderColor = 'rgba(96,165,250,0.5)';
+        }
+    });
+
+    /* ── Validation ── */
+    const form = document.getElementById('register-form');
+
+    function showError(id, show) {
+        const errEl = document.getElementById('err-' + id);
+        if (errEl) errEl.classList.toggle('hidden', !show);
+        const input = document.getElementById(id);
+        if (input) input.style.borderColor = show ? 'rgba(248,113,113,0.6)' : '';
+    }
+
+    form.addEventListener('submit', (e) => {
+        let valid = true;
+
+        /* First name */
+        if (!document.getElementById('first_name').value.trim()) {
+            showError('first_name', true); valid = false;
+        } else showError('first_name', false);
+
+        /* Last name */
+        if (!document.getElementById('last_name').value.trim()) {
+            showError('last_name', true); valid = false;
+        } else showError('last_name', false);
+
+        /* Email */
+        const email = document.getElementById('email').value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showError('email', true); valid = false;
+        } else showError('email', false);
+
+        /* Country */
+        if (!countrySelect.value) {
+            showError('country', true); valid = false;
+        } else {
+            showError('country', false);
+            if (countrySelect.value === 'Other' && !countryOtherInput.value.trim()) {
+                showError('country_other', true); valid = false;
+            } else showError('country_other', false);
+        }
+
+        /* Category */
+        if (!document.getElementById('category').value) {
+            showError('category', true); valid = false;
+        } else showError('category', false);
+
+        /* Payment proof */
+        const file    = fileInput.files[0];
+        const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        if (!file || !allowed.includes(file.type) || file.size > 5 * 1024 * 1024) {
+            showError('payment_proof', true); valid = false;
+        } else showError('payment_proof', false);
+
+        if (!valid) e.preventDefault();
+    });
+
+    /* Clear error on change */
+    ['first_name', 'last_name', 'email', 'country', 'category'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => showError(id, false));
+    });
+</script>
+</body>
+</html>
