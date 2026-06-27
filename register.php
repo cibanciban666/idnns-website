@@ -109,6 +109,55 @@
         .btn-submit { transition: transform 0.2s ease; }
         .btn-submit:hover  { transform: scale(1.03); }
         .btn-submit:active { transform: scale(0.98); }
+
+        /* ── Custom Dropdown ── */
+        .custom-dropdown { position: relative; }
+
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-align: left;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .dropdown-trigger .dd-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-trigger .dd-chevron { flex-shrink: 0; width: 1rem; height: 1rem; color: rgba(255,255,255,0.40); transition: transform 0.2s ease; }
+        .custom-dropdown.open .dd-chevron { transform: rotate(180deg); }
+        .dropdown-trigger.dd-placeholder .dd-label { color: rgba(255,255,255,0.25); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0; right: 0;
+            z-index: 300;
+            background: var(--navy-deep, #000070);
+            border: 1px solid var(--line-soft, rgba(255,255,255,0.10));
+            border-radius: 0.75rem;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 0.35rem 0;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+        }
+        .custom-dropdown.open .dropdown-list { display: block; }
+
+        .dropdown-item {
+            padding: 0.65rem 1rem;
+            font-size: 0.875rem;
+            color: rgba(255,255,255,0.88);
+            cursor: pointer;
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+        .dropdown-item:hover { background: rgba(96,165,250,0.14); color: #fff; }
+        .dropdown-item.dd-selected { color: var(--blue-accent, #60a5fa); }
+
+        /* Custom scrollbar */
+        .dropdown-list::-webkit-scrollbar { width: 5px; }
+        .dropdown-list::-webkit-scrollbar-track { background: transparent; }
+        .dropdown-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 9999px; }
+        .dropdown-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
     </style>
 </head>
 <body>
@@ -214,38 +263,40 @@
 
                 <!-- Country -->
                 <div class="mb-6">
-                    <label for="country" class="field-label">Country <span class="text-blue-400">*</span></label>
-                    <div class="relative">
-                        <select id="country" name="country" class="field-input pr-10" required>
-                            <option value="" disabled selected>Select your country</option>
-                            <option value="Indonesia">Indonesia</option>
-                            <option value="Malaysia">Malaysia</option>
-                            <option value="Singapore">Singapore</option>
-                            <option value="Philippines">Philippines</option>
-                            <option value="Thailand">Thailand</option>
-                            <option value="Vietnam">Vietnam</option>
-                            <option value="Brunei">Brunei</option>
-                            <option value="Myanmar">Myanmar</option>
-                            <option value="Australia">Australia</option>
-                            <option value="Japan">Japan</option>
-                            <option value="South Korea">South Korea</option>
-                            <option value="China">China</option>
-                            <option value="India">India</option>
-                            <option value="Bangladesh">Bangladesh</option>
-                            <option value="Pakistan">Pakistan</option>
-                            <option value="Oman">Oman</option>
-                            <option value="Saudi Arabia">Saudi Arabia</option>
-                            <option value="United Arab Emirates">United Arab Emirates</option>
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="Germany">Germany</option>
-                            <option value="France">France</option>
-                            <option value="Netherlands">Netherlands</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-white/40"></i>
+                    <label class="field-label">Country <span class="text-blue-400">*</span></label>
+                    <div class="custom-dropdown" id="dropdown-country">
+                        <button type="button" id="country-trigger" class="dropdown-trigger field-input dd-placeholder"
+                                aria-haspopup="listbox" aria-expanded="false">
+                            <span class="dd-label">Select your country</span>
+                            <svg class="dd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <input type="hidden" id="country" name="country">
+                        <div class="dropdown-list" role="listbox">
+                            <div class="dropdown-item" data-value="Australia">Australia</div>
+                            <div class="dropdown-item" data-value="Bangladesh">Bangladesh</div>
+                            <div class="dropdown-item" data-value="Brunei">Brunei</div>
+                            <div class="dropdown-item" data-value="Canada">Canada</div>
+                            <div class="dropdown-item" data-value="China">China</div>
+                            <div class="dropdown-item" data-value="France">France</div>
+                            <div class="dropdown-item" data-value="Germany">Germany</div>
+                            <div class="dropdown-item" data-value="India">India</div>
+                            <div class="dropdown-item" data-value="Indonesia">Indonesia</div>
+                            <div class="dropdown-item" data-value="Japan">Japan</div>
+                            <div class="dropdown-item" data-value="Malaysia">Malaysia</div>
+                            <div class="dropdown-item" data-value="Myanmar">Myanmar</div>
+                            <div class="dropdown-item" data-value="Netherlands">Netherlands</div>
+                            <div class="dropdown-item" data-value="Oman">Oman</div>
+                            <div class="dropdown-item" data-value="Pakistan">Pakistan</div>
+                            <div class="dropdown-item" data-value="Philippines">Philippines</div>
+                            <div class="dropdown-item" data-value="Saudi Arabia">Saudi Arabia</div>
+                            <div class="dropdown-item" data-value="Singapore">Singapore</div>
+                            <div class="dropdown-item" data-value="South Korea">South Korea</div>
+                            <div class="dropdown-item" data-value="Thailand">Thailand</div>
+                            <div class="dropdown-item" data-value="United Arab Emirates">United Arab Emirates</div>
+                            <div class="dropdown-item" data-value="United Kingdom">United Kingdom</div>
+                            <div class="dropdown-item" data-value="United States">United States</div>
+                            <div class="dropdown-item" data-value="Vietnam">Vietnam</div>
+                            <div class="dropdown-item" data-value="Other">Other</div>
                         </div>
                     </div>
                     <p class="hidden mt-1.5 text-red-400 text-xs" id="err-country">Please select your country.</p>
@@ -259,17 +310,19 @@
 
                 <!-- Membership Category -->
                 <div class="mb-6">
-                    <label for="category" class="field-label">Membership Category <span class="text-blue-400">*</span></label>
-                    <div class="relative">
-                        <select id="category" name="category" class="field-input pr-10" required>
-                            <option value="" disabled selected>Select a category</option>
-                            <option value="Student">Student</option>
-                            <option value="Lecturer">Lecturer</option>
-                            <option value="Professional">Professional</option>
-                            <option value="General Public">General Public</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-white/40"></i>
+                    <label class="field-label">Membership Category <span class="text-blue-400">*</span></label>
+                    <div class="custom-dropdown" id="dropdown-category">
+                        <button type="button" id="category-trigger" class="dropdown-trigger field-input dd-placeholder"
+                                aria-haspopup="listbox" aria-expanded="false">
+                            <span class="dd-label">Select a category</span>
+                            <svg class="dd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <input type="hidden" id="category" name="category">
+                        <div class="dropdown-list" role="listbox">
+                            <div class="dropdown-item" data-value="General Public">General Public</div>
+                            <div class="dropdown-item" data-value="Lecturer">Lecturer</div>
+                            <div class="dropdown-item" data-value="Professional">Professional</div>
+                            <div class="dropdown-item" data-value="Student">Student</div>
                         </div>
                     </div>
                     <p class="hidden mt-1.5 text-red-400 text-xs" id="err-category">Please select a membership category.</p>
@@ -359,6 +412,62 @@
         iconX.classList.add('hidden');
     }
 
+    /* ── Custom Dropdown logic ── */
+    function initCustomDropdown(wrapperId, triggerId, hiddenId, placeholder) {
+        const wrapper  = document.getElementById(wrapperId);
+        const trigger  = document.getElementById(triggerId);
+        const hidden   = document.getElementById(hiddenId);
+        const list     = wrapper.querySelector('.dropdown-list');
+        const label    = trigger.querySelector('.dd-label');
+
+        function openDropdown() {
+            wrapper.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
+        }
+        function closeDropdown() {
+            wrapper.classList.remove('open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
+        });
+
+        list.addEventListener('click', (e) => {
+            const item = e.target.closest('.dropdown-item');
+            if (!item) return;
+            const val = item.dataset.value;
+
+            /* Update hidden input and fire change so listeners pick it up */
+            hidden.value = val;
+            hidden.dispatchEvent(new Event('change', { bubbles: true }));
+
+            /* Update trigger label */
+            label.textContent = val;
+            trigger.classList.remove('dd-placeholder');
+
+            /* Mark selected item */
+            list.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('dd-selected'));
+            item.classList.add('dd-selected');
+
+            closeDropdown();
+        });
+
+        /* Close on outside click / touch */
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) closeDropdown();
+        });
+
+        /* Close on Escape */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDropdown();
+        });
+    }
+
+    initCustomDropdown('dropdown-country',  'country-trigger',  'country',  'Select your country');
+    initCustomDropdown('dropdown-category', 'category-trigger', 'category', 'Select a category');
+
     /* ── Country "Other" toggle ── */
     const countrySelect     = document.getElementById('country');
     const countryOtherWrap  = document.getElementById('country-other-wrap');
@@ -444,8 +553,9 @@
     function showError(id, show) {
         const errEl = document.getElementById('err-' + id);
         if (errEl) errEl.classList.toggle('hidden', !show);
-        const input = document.getElementById(id);
-        if (input) input.style.borderColor = show ? 'rgba(248,113,113,0.6)' : '';
+        /* For custom dropdowns highlight the visible trigger button, not the hidden input */
+        const visual = document.getElementById(id + '-trigger') || document.getElementById(id);
+        if (visual) visual.style.borderColor = show ? 'rgba(248,113,113,0.6)' : '';
     }
 
     form.addEventListener('submit', (e) => {
